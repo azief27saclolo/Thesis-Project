@@ -4,20 +4,20 @@
 ### 1. Project Overview
 This system implements a real-time tomato disease detection system using:
 - ESP32-CAM for image capture
-- MobileNetV2 (lightweight CNN) for disease detection
-- Web interface for monitoring
+- Lightweight CNN for disease detection
+- Google Cloud Functions for processing and analyzing the uploaded image captured by ESP32-CAM
+- Blink IoT App interface for monitoring 
 - Push notifications for alerts
 
 ### 2. System Components
 
 #### 2.1 AI Model (MobileNetV2)
 - Pre-trained on ImageNet
-- Modified for tomato diseases and fruit health (5 classes):
-  - Healthy Fruit
+- Modified for tomato diseases and fruit health (4 classes):
   - Healthy Leaf
   - Early Blight
   - Late Blight
-  - Tomato Yellow Leaf Curl Virus
+  - Septoria Leaf Spot
 - Optimized to 35% of original size (α=0.35)
 - Input size: 96x96x3 pixels
 
@@ -25,16 +25,16 @@ This system implements a real-time tomato disease detection system using:
 1. Dataset Preparation:
    ```
    raw_dataset/
-   ├── healthy/           (150 images)
-   ├── early_blight/      (150 images)
-   ├── late_blight/       (150 images)
-   └── tylcv/            (150 images)
+   ├── healthy/           (500 images)
+   ├── early_blight/      (500 images)
+   ├── late_blight/       (500 images)
+   └── septoria_leaf/     (500 images)
    ```
 
 2. Training Pipeline:
    - Preprocess images (resize, normalize)
    - Augment dataset (increase samples)
-   - Train MobileNetV2 (transfer learning)
+   - Train Lightweight CNN (transfer learning)
    - Convert to TFLite format
 
 3. Two-Phase Training:
@@ -43,24 +43,24 @@ This system implements a real-time tomato disease detection system using:
    - Uses Adam optimizer (learning rate: 1e-5)
 
 #### 2.3 ESP32-CAM Implementation
-- Captures images in real-time
-- Runs TFLite model inference
 - Connects to WiFi for data transmission
-- Stores offline detections on SD card
-- Syncs data when online
+- Captures images in real-time
+- Upload the image to Google Cloud Function for inference and process
+- Stores results to Firebase such as logs and time and date.
 
 #### 2.4 Web Monitoring System
-- Flask server backend
-- SQLite database for detection history
+- Google Cloud Functions as server
+- Firebase for result storing
 - Real-time web interface
-- Push notifications via Pushbullet
+- Push notifications via Blynk Iot App
 - Mobile-friendly design
+- Monitor device via Blynk Iot App
 
 ### 3. Technical Details
 
 #### 3.1 Model Architecture
 ```
-MobileNetV2 (α=0.35)
+Lightweight CNN (α=0.35)
 ├── Input (96x96x3)
 ├── Base layers (ImageNet pre-trained)
 ├── Global Average Pooling
@@ -87,11 +87,19 @@ MobileNetV2 (α=0.35)
 ```
 ESP32-CAM
    ↓
-   ↓ (WiFi/Local Storage)
+   ↓ Captures Image
    ↓
-Flask Server
+Google Cloud Function Server
    ↓
-   ↓ (Web Interface/Database)
+   ↓ 
+   ↓
+Firebase
+   ↓
+   ↓ Stores detection logs
+   ↓
+Blynk Iot App
+   ↓
+   ↓ View results via dashboard
    ↓
 User Devices
 ```
@@ -111,7 +119,7 @@ User Devices
    ├── healthy/
    ├── early_blight/
    ├── late_blight/
-   └── tylcv/
+   └── septoria_leaf
    ```
 
 #### 4.2 Training Pipeline
@@ -143,18 +151,17 @@ python model/tomato_cnn.py
 
 ### 5. Key Features
 - Real-time disease detection
-- Offline operation capability
+- Online operation capability
 - Automatic data synchronization
 - Push notifications
 - Mobile monitoring interface
 - Detection history tracking
-- Low resource requirements
+
 
 ### 6. Performance Metrics
 - Target accuracy: 90%+
 - Real-time inference
 - Minimal latency
-- Efficient resource usage
 - Reliable disease detection
 
 ### 7. Future Improvements
@@ -163,3 +170,4 @@ python model/tomato_cnn.py
 - Model optimization
 - Battery optimization
 - Extended offline capabilities
+
