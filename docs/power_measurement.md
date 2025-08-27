@@ -14,23 +14,7 @@
    - Connect multimeter's mA port to ESP32-CAM VIN
    - Connect power supply positive to multimeter's input
 
-## Comparative Measurement Approach
 
-To measure the ML model's contribution specifically:
-
-1. **Baseline Current**:
-   - Load firmware with camera active but ML disabled
-   - Record current draw: ~70-120mA typical
-
-2. **ML Processing Current**:
-   - Load full firmware with ML enabled
-   - Record current during inference: ~180-250mA typical
-   - The difference represents ML overhead
-
-3. **State Isolation**:
-   - Modify firmware to toggle GPIO pin during ML inference
-   - Use pin state to know when ML is running
-   - Record current specifically during those periods
 
 ## Advanced Measurement Options
 
@@ -46,3 +30,4 @@ For more precise measurements:
    - Can provide continuous voltage/current readings
 
 These methods will give you the actual power consumption, which will be more accurate than software estimates from `software_power_monitor.h`.
+
