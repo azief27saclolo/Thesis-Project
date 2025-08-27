@@ -19,7 +19,7 @@
    - Higher computational resources required
 
 3. **Dataset Considerations**:
-   - With 300 images per class, you have a reasonable dataset for training from scratch
+   - With 500 images per class, you have a reasonable dataset for training from scratch
    - But still less optimal than leveraging transfer learning
    - Would likely need augmentation to generate 6-10 variants per image (instead of 3)
 
@@ -34,7 +34,8 @@
    - May perform better on unusual disease presentations not similar to ImageNet classes
 
 ## Recommendation
-With your current dataset size (300 images/class), training from scratch is feasible but will require:
+With your current dataset size (500 images/class), training from scratch is feasible but will require:
 - More extensive data augmentation
 - Longer training time (40+ epochs)
 - Additional regularization to prevent overfitting
+
