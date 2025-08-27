@@ -4,15 +4,12 @@
 
 1. **Organize Raw Dataset**
    - Create dataset folders in `raw_dataset/`
-   - Populate with 300 images per class
+   - Populate with 500 images per class total of 2000
    - Classes:
      - healthy_leaf
-     - healthy_fruit
      - early_blight_leaf
-     - early_blight_fruit
      - late_blight_leaf
-     - late_blight_fruit
-     - tylcv (Tomato Yellow Leaf Curl Virus)
+     - septoria leaf spot leaf
 
 2. **Preprocess Images**
    ```bash
@@ -156,3 +153,4 @@
    - Retrain model with new data
    - Convert to TFLite and update ESP32-CAM
    - Test new model performance
+
