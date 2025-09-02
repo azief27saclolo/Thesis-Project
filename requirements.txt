@@ -5,3 +5,7 @@ scikit-learn>=0.24.2
 Pillow>=8.2.0
 matplotlib>=3.4.2
 h5py>=2.10.0
+tensorflowjs>=3.15.0
+firebase-admin>=5.2.0
+google-cloud-storage>=2.0.0
+python-dotenv>=0.19.0

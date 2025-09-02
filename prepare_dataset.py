@@ -9,7 +9,7 @@ EXPECTED_CLASSES = [
     'healthy_leaf',           
     'early_blight_leaf',      
     'late_blight_leaf',       
-    'tomato_yellow_leaf_curl_virus'              
+    'septoria_leaf'              
 ]
 
 def verify_dataset_structure(source_dir):
@@ -117,10 +117,11 @@ def organize_dataset(source_dir, output_dir, validation_split=0.2):
             print(f"\rProgress: {processed_files}/{total_files}", end="")
             
         for f in valid_files:
-            shutil.copy2(
-                os.path.join(source_dir, disease, f),
-                os.path.join(valid_dir, disease, f)
-            )
+            # Also preprocess validation images
+            img_path = os.path.join(source_dir, disease, f)
+            processed_img = preprocess_image(img_path)
+            output_path = os.path.join(valid_dir, disease, f)
+            cv2.imwrite(output_path, cv2.cvtColor(processed_img, cv2.COLOR_RGB2BGR))
             processed_files += 1
             print(f"\rProgress: {processed_files}/{total_files}", end="")
     
@@ -128,8 +129,8 @@ def organize_dataset(source_dir, output_dir, validation_split=0.2):
     print(f"Total images processed: {processed_files}")
 
 if __name__ == "__main__":
-    # Use absolute paths to avoid confusion
-    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Use correct path to the raw_dataset directory
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     SOURCE_DIR = os.path.join(PROJECT_ROOT, "raw_dataset")
     OUTPUT_DIR = os.path.join(PROJECT_ROOT, "data")
     

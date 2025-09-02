@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import tensorflow as tf
+import argparse
 
 def create_augmentation_layer():
     """Create augmentation using tf.keras.Sequential but with more color preservation"""
@@ -45,14 +46,17 @@ def augment_dataset(input_dir, output_dir, samples_per_image=5):
             # Convert BGR to RGB for TensorFlow processing
             orig_rgb = cv2.cvtColor(orig_cv2, cv2.COLOR_BGR2RGB)
             
+            # Resize to 96x96 to match model input size
+            orig_rgb = cv2.resize(orig_rgb, (96, 96))
+            
             # Create TensorFlow tensor
             img = tf.convert_to_tensor(orig_rgb, dtype=tf.float32) / 255.0
             img = tf.expand_dims(img, 0)
             
-            # Save original image
+            # Save original image (resized to 96x96)
             base_name = os.path.splitext(img_name)[0]
             original_path = os.path.join(output_class_dir, f"{base_name}_original.jpg")
-            cv2.imwrite(original_path, orig_cv2)  # Save original directly
+            cv2.imwrite(original_path, cv2.cvtColor(orig_rgb, cv2.COLOR_RGB2BGR))  # Save resized image
             
             # Generate augmented images with better color preservation
             successful_augmentations = 0
@@ -88,15 +92,35 @@ def augment_dataset(input_dir, output_dir, samples_per_image=5):
             print(f"Generated {successful_augmentations} good augmented images for {img_name}")
 
 if __name__ == "__main__":
-    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    INPUT_DIR = os.path.join(PROJECT_ROOT, "raw_dataset")
-    OUTPUT_DIR = os.path.join(PROJECT_ROOT, "augmented_dataset")
-    SAMPLES_PER_IMAGE = 3  # Reduce to just 3 augmentations per image
-                           # since you have 300 images per class already
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Augment tomato disease dataset with configurable options')
+    parser.add_argument('--augment', action='store_true', help='Enable dataset augmentation')
+    parser.add_argument('--samples', type=int, default=3, help='Number of augmented samples to generate per original image')
+    parser.add_argument('--input_dir', type=str, help='Custom input directory path (optional)')
+    parser.add_argument('--output_dir', type=str, help='Custom output directory path (optional)')
+    args = parser.parse_args()
+    
+    # Use default or custom paths
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+    INPUT_DIR = args.input_dir if args.input_dir else os.path.join(PROJECT_ROOT, "raw_dataset")
+    OUTPUT_DIR = args.output_dir if args.output_dir else os.path.join(PROJECT_ROOT, "augmented_dataset")
+    SAMPLES_PER_IMAGE = args.samples
     
     print(f"Input directory: {INPUT_DIR}")
     print(f"Output directory: {OUTPUT_DIR}")
-    print(f"Generating {SAMPLES_PER_IMAGE} augmented images per original image")
     
-    augment_dataset(INPUT_DIR, OUTPUT_DIR, SAMPLES_PER_IMAGE)
-    print("\nAugmentation completed!")
+    # Check if augmentation is enabled
+    if args.augment:
+        print(f"Augmentation enabled. Generating {SAMPLES_PER_IMAGE} augmented images per original image")
+        augment_dataset(INPUT_DIR, OUTPUT_DIR, SAMPLES_PER_IMAGE)
+        print("\nAugmentation completed!")
+    else:
+        print("Augmentation skipped. Use --augment to enable augmentation.")
+        print("\nTo generate augmented images, run:")
+        print("python augment_dataset.py --augment")
+        print("\nAdditional options:")
+        print("  --samples N    : Generate N samples per original image")
+        print("  --input_dir DIR: Use custom input directory")
+        print("  --output_dir DIR: Use custom output directory")
+        print("\nExample:")
+        print("python augment_dataset.py --augment --samples 5 --input_dir custom_raw_data --output_dir custom_output")

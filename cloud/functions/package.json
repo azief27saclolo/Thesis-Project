@@ -1,0 +1,24 @@
+{
+  "name": "tomato-disease-detection-functions",
+  "version": "1.0.0",
+  "description": "Cloud Functions for tomato disease detection",
+  "main": "index.js",
+  "engines": {
+    "node": "16"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^6.5.2",
+    "@tensorflow/tfjs-node": "^4.2.0",
+    "firebase-admin": "^11.5.0",
+    "firebase-functions": "^4.2.0",
+    "sharp": "^0.32.1"
+  },
+  "private": true
+}
