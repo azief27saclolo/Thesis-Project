@@ -1,0 +1,15 @@
+{
+  "classes": [
+    "early_blight_leaf",
+    "healthy_leaf",
+    "late_blight_leaf",
+    "septoria_leaf"
+  ],
+  "input_shape": [
+    96,
+    96,
+    3
+  ],
+  "version": "1.0",
+  "date_trained": "2025-09-02 18:27:19"
+}

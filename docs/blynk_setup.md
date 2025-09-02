@@ -1,4 +1,4 @@
-# Blynk Mobile App Setup Guide
+# Blynk Mobile App Setup Guide for Cloud-Based System
 
 ## 1. Initial Setup
 
@@ -9,66 +9,103 @@
    - Choose WiFi as connection type
    - Note down the Auth Token sent to your email
 
-## 2. Dashboard Layout
+## 2. Dashboard Layout for Cloud Architecture
 
 Add the following widgets:
 
-1. **Label** (connected to V0)
-   - Title: "Disease Status"
-   - Shows current detected disease
+1. **Timer Widget** (connected to V1)
+   - Title: "Capture Interval"
+   - Set as a slider from 1 to 120 (minutes)
+   - Controls how often the ESP32-CAM captures images
 
-2. **Gauge** (connected to V1)
-   - Title: "Confidence"
-   - Min: 0, Max: 100
-   - Shows detection confidence
+2. **Switch Widget** (connected to V2)
+   - Title: "Auto Capture"
+   - Enables/disables automatic image capture
 
-3. **Value Display** (connected to V2)
-   - Title: "Last Update"
-   - Shows timestamp of last detection
+3. **Button Widget** (connected to V3)
+   - Title: "Capture Now"
+   - Mode: Push
+   - Triggers immediate image capture
 
-4. **SuperChart** (connect to V0 and V1)
-   - To show history of detections
-   - Enable "Time" mode
-   
-5. **Notification Widget**
-   - No pin needed - for push notifications
+4. **Value Display Widget** (connected to V4)
+   - Title: "Latest Result"
+   - Shows most recent disease detection result from Google Cloud
 
-6. **Alarm and Sound Widgets:**
-   - LED (V3): "Disease Alarm" - lights up when disease detected
-   - Button (V8): "Sound Alert" - can be used with Eventor to play sounds
+5. **Gauge Widget** (connected to V5)
+   - Title: "Battery"
+   - Range: 0-100%
+   - Shows ESP32-CAM battery level
 
-7. **Disease Count Displays:**
-   - Value Display (V4): "Healthy Count"
-   - Value Display (V5): "Early Blight Count"
-   - Value Display (V6): "Late Blight Count"
-   - Value Display (V7): "TYLCV Count"
+6. **SuperChart Widget** (connected to V6)
+   - Title: "Detection History"
+   - Shows history of detection results over time
+   - Pulls data from Firebase via webhook
 
-8. **Sprayer Control:**
-   - Button (V9): "Manual Spray" - press to activate sprayer
-   - Switch (V10): "Auto Spray" - toggle automatic spraying
+7. **Image Gallery Widget**
+   - Shows recent captured images from Firebase Storage
+   - Configure via webhook to your Firebase storage URL
 
-## 3. Configuration
+8. **Notification Widget**
+   - For receiving push notifications when diseases are detected
+   - Connected to Firebase Cloud Messaging
+
+## 3. Configuration for Cloud System
 
 In ESP32 code, update these values:
 ```cpp
-char auth[] = "YourBlynkAuthToken";
-char ssid[] = "YourWiFiName";
-char password[] = "YourWiFiPassword";
+// Blynk credentials
+#define BLYNK_AUTH "YourBlynkAuthToken"
+
+// Firebase credentials
+#define FIREBASE_HOST "your-project-id.firebaseio.com"
+#define FIREBASE_AUTH "your-firebase-database-secret"
+#define FIREBASE_STORAGE_BUCKET "your-project-id.appspot.com"
+
+// WiFi credentials
+#define WIFI_SSID "your-wifi-ssid"
+#define WIFI_PASSWORD "your-wifi-password"
 ```
 
-## 4. How It Works
+## 4. How the Cloud System Works
 
-1. ESP32-CAM detects diseases and connects to Blynk cloud
-2. Results appear immediately on your mobile app
-3. Push notifications sent when diseases are detected
-4. Offline detections stored on SD card
-5. When connection is restored, offline data is synced
+1. ESP32-CAM captures images and uploads to Firebase Storage
+2. Google Cloud Functions analyze images using TensorFlow model
+3. Detection results are stored in Firebase Realtime Database
+4. Blynk app retrieves and displays results from Firebase
+5. Push notifications are sent via Firebase Cloud Messaging
 
-## 5. Benefits
+## 5. Benefits of the Cloud Approach
 
-- No need for PC or Raspberry Pi server
-- Real-time mobile monitoring
-- Works anywhere with internet access
-- Push notifications
-- Historical data visualization
-- Low-cost solution
+- ESP32-CAM battery lasts longer (no local processing)
+- More accurate disease detection (using full-sized ML model)
+- Access to advanced analytics in the cloud
+- Dashboard accessible from any device anywhere
+- Scalable to multiple cameras/fields
+- Historical data stored indefinitely
+- Integration with other cloud services possible
+
+## 6. Webhooks for Firebase Integration
+
+To set up Firebase to Blynk integration:
+
+1. In the Blynk Web Console, create a new Webhook:
+   - Name: "FirebaseResults"
+   - URL: Your Firebase function URL that returns detection results
+   - Method: GET
+   - Content Type: application/json
+
+2. Configure the Webhook to run every 5 minutes or when triggered
+   - This will pull the latest data from Firebase
+
+3. Map the Webhook response to your Blynk virtual pins:
+   - V4: Latest disease result
+   - V6: Historical data for chart
+   - Image Gallery: URLs to detected images
+
+## 7. Additional Features
+
+- **Image Viewer**: Tap on detection results to view the full image
+- **Disease Information**: Add buttons linked to treatment information
+- **Notification Settings**: Configure alert thresholds
+- **Data Export**: Export detection history to CSV
+- **Multiple Device Management**: Monitor several ESP32-CAMs from one dashboard

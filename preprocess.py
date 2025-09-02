@@ -11,7 +11,7 @@ def check_dataset(input_dir):
         print("├── healthy_leaf/")
         print("├── early_blight_leaf/")
         print("├── late_blight_leaf/")
-        print("└── tomato_yellow_leaf_curl_virus/")
+        print("└── septoria_leaf/")
         return False
         
     image_count = 0
@@ -28,13 +28,13 @@ def check_dataset(input_dir):
         print("1. Put healthy tomato images in 'healthy_leaf/'")
         print("2. Put early blight images in 'early_blight_leaf/'")
         print("3. Put late blight images in 'late_blight_leaf/'")
-        print("4. Put mosaic virus images in 'tomato_yellow_leaf_curl_virus/'")
+        print("4. Put mosaic virus images in 'septoria_leaf/'")
         return False
         
     print(f"\nTotal images found: {image_count}")
     return True
 
-def preprocess_image(image_path, target_size=(224, 224)):
+def preprocess_image(image_path, target_size=(96, 96)):
     """Enhanced preprocessing for tomato disease images"""
     # Read image
     img = cv2.imread(image_path)
@@ -86,8 +86,8 @@ def process_dataset(input_dir, output_dir):
                 np.save(output_path, processed_img)
 
 if __name__ == "__main__":
-    # Use absolute paths instead of relative paths
-    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Use correct path to the raw_dataset directory
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     raw_dir = os.path.join(PROJECT_ROOT, "raw_dataset")
     processed_dir = os.path.join(PROJECT_ROOT, "processed_dataset")
     
